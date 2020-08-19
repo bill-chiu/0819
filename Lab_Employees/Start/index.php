@@ -2,7 +2,14 @@
 
 require_once("config.php");
 $link = mysqli_connect($dbhost, $dbuser, $dbpass, $dbname, $port);
-$sqlCommand = 'select * from employee';
+$sqlCommand = 'SELECT id,managerId,firstName,lastName,title,picture,
+(SELECT COUNT(*) FROM employee WHERE managerId=e.id) as reportnumber
+FROM employee e';
+$result = mysqli_query($link, "set names utf8");
+mysqli_select_db($link,$dbname);
+
+
+
 $result = mysqli_query($link, $sqlCommand);
 
 
@@ -30,20 +37,15 @@ $result = mysqli_query($link, $sqlCommand);
 
         <div data-role="content">
             <ul data-role="listview" data-filter="true">
-
-
                 <?php while ($row = mysqli_fetch_assoc($result)) { ?>
                     <li>
                         <a href="employeeDetails.php?id=<?= $row["id"]?>">
                             <img src="images/<?= $row["picture"]?>">
                             <h4><?= $row["firstName"]?> <?= $row["lastName"]?> </h4>
-                            <p>President and CEO </p> <span class="ui-li-count">4</span>
+                            <p><?= $row["title"]?></p> <span class="ui-li-count"><?= $row["reportnumber"]?></span>
                         </a>
                     </li>
                 <?php  } ?>
-
-
-
             </ul>
         </div>
 
